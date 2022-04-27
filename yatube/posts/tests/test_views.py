@@ -56,7 +56,7 @@ class PostPagesTests(TestCase):
     def test_pages_uses_correct_templates(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_pages_names = {
-            reverse('posts:main'): 'posts/index.html',
+            reverse('posts:index'): 'posts/index.html',
             reverse('posts:group_list', kwargs={'slug': 'test-slug'}):
                 'posts/group_list.html',
             reverse('posts:profile', kwargs={'username': self.author}):
@@ -75,7 +75,7 @@ class PostPagesTests(TestCase):
 
     def test_post_index_page_show_correct_context(self):
         """Шаблон главной страницы сформирован с правильным контекстом."""
-        response = self.authorized_client.get(reverse('posts:main'))
+        response = self.authorized_client.get(reverse('posts:index'))
         first_object = response.context['page_obj'][0]
         context_objects = {
             self.author: first_object.author,
@@ -148,7 +148,7 @@ class PostPagesTests(TestCase):
         """При создании поста он должен появляется на главной странице,
         на странице выбранной группы и в профиле пользователя"""
         exp_pages = [
-            reverse('posts:main'),
+            reverse('posts:index'),
             reverse(
                 'posts:group_list', kwargs={'slug': self.group.slug}),
             reverse(
@@ -185,14 +185,14 @@ class PostPagesTests(TestCase):
         что там появился пост.
         """
 
-        posts_in_bd = self.guest_client.get(reverse('posts:main')).content
+        posts_in_bd = self.guest_client.get(reverse('posts:index')).content
 
         Post.objects.create(
             text='Тестовый текст нового поста',
             author=self.author,
         )
 
-        posts_with_cache = self.guest_client.get(reverse('posts:main')).content
+        posts_with_cache = self.guest_client.get(reverse('posts:index')).content
 
         self.assertEqual(
             posts_in_bd,
@@ -202,7 +202,7 @@ class PostPagesTests(TestCase):
         cache.clear()
 
         posts_without_cache = self.guest_client.get(
-            reverse('posts:main')).content
+            reverse('posts:index')).content
 
         self.assertNotEqual(
             posts_in_bd,
@@ -234,12 +234,12 @@ class PaginatorViewsTest(TestCase):
 
     def test_first_page_contains_ten_records(self):
         """Проверка: на первой странице должно быть 10 постов."""
-        response = self.client.get(reverse('posts:main'))
+        response = self.client.get(reverse('posts:index'))
         self.assertEqual(len(response.context['page_obj']), ITEMS_PER_PAGE)
 
     def test_second_page_contains_three_records(self):
         """Проверка: на второй странице должно быть три поста."""
-        response = self.client.get(reverse('posts:main') + '?page=2')
+        response = self.client.get(reverse('posts:index') + '?page=2')
         self.assertEqual(len(response.context['page_obj']), ITEMS_PER_PAGE_3)
 
     def test_group_list_contains_ten_pages(self):
@@ -295,7 +295,7 @@ class ImageViewsTest(TestCase):
     def setUp(self):
         self.guest_client = Client()
         self.pages = {
-            reverse('posts:main'): 'posts/index.html',
+            reverse('posts:index'): 'posts/index.html',
             reverse('posts:group_list', kwargs={'slug': 'test-slug'}):
                 'posts/group_list.html',
             reverse('posts:profile', kwargs={'username': self.user}):

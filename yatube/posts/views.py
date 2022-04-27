@@ -10,10 +10,10 @@ from .forms import PostForm, CommentForm
 
 @require_GET
 def index(request):
-    posts = cache.get('posts:main')
+    posts = cache.get('posts:index')
     if posts is None:
         posts = Post.objects.select_related('group').all()
-        cache.set('posts:main', posts, timeout=20)
+        cache.set('posts:index', posts, timeout=20)
     
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 10)
@@ -125,7 +125,7 @@ def follow_index(request):
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    context = {'page': page}
+    context = {'page_obj': page}
     return render(request, "posts/follow.html", context)
 
 
