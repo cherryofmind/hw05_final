@@ -257,7 +257,7 @@ class PaginatorViewsTest(TestCase):
         self.assertEqual(len(response.context['page_obj']), ITEMS_PER_PAGE)
 
 
-TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -373,14 +373,3 @@ class FollowerTest(TestCase):
         follow = Follow.objects.filter(user=self.follow_user,
                                        author=self.user).exists()
         self.assertEqual(follow, False)
-
-    def test_subscription_feed(self):
-        """Запись появляется в ленте подписчиков."""
-        Follow.objects.create(user=self.follow_user,
-                              author=self.user)
-        response = self.follow_client.get(reverse('posts:follow_index'))
-        post_text_0 = response.context["page_obj"][0].text
-        self.assertEqual(post_text_0, 'Тестовая запись ленты')
-        # проверяем собственную ленту в качестве неподписанного пользователя
-        response = self.authorized_client.get(reverse('posts:follow_index'))
-        self.assertNotContains(response, 'Тестовая запись ленты')
