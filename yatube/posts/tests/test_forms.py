@@ -5,7 +5,6 @@ from django.urls import reverse
 from ..forms import PostForm
 from ..models import Group, Post
 import shutil
-import tempfile
 from django.conf import settings
 
 User = get_user_model()

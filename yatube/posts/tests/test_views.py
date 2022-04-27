@@ -192,7 +192,8 @@ class PostPagesTests(TestCase):
             author=self.author,
         )
 
-        posts_with_cache = self.guest_client.get(reverse('posts:index')).content
+        posts_with_cache = self.guest_client.get(
+            reverse('posts:index')).content
 
         self.assertEqual(
             posts_in_bd,
@@ -255,7 +256,9 @@ class PaginatorViewsTest(TestCase):
             'posts:profile', kwargs={'username': self.author.username}))
         self.assertEqual(len(response.context['page_obj']), ITEMS_PER_PAGE)
 
+
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class ImageViewsTest(TestCase):

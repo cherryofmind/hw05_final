@@ -8,13 +8,14 @@ from django.core.cache import cache
 
 from .forms import PostForm, CommentForm
 
+
 @require_GET
 def index(request):
     posts = cache.get('posts:index')
     if posts is None:
         posts = Post.objects.select_related('group').all()
         cache.set('posts:index', posts, timeout=20)
-    
+
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
@@ -92,6 +93,7 @@ def post_create(request):
         return redirect('posts:profile', str(request.user))
     return render(request, 'posts/post_create.html', {'form': form})
 
+
 @login_required
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -107,9 +109,9 @@ def post_edit(request, post_id):
     return render(request, 'posts/post_create.html', {'form': form,
                   'is_edit': is_edit})
 
+
 @login_required
 def add_comment(request, post_id):
-    # Получите пост 
     post = get_object_or_404(Post, id=post_id)
     form = CommentForm(request.POST or None)
     if form.is_valid():
@@ -118,6 +120,7 @@ def add_comment(request, post_id):
         comment.post = post
         comment.save()
     return redirect('posts:post_detail', post_id=post_id)
+
 
 @login_required
 def follow_index(request):

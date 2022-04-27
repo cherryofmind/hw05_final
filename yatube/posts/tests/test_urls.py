@@ -84,4 +84,3 @@ class TaskURLTests(TestCase):
         """Страница 404 доступна любому пользователю."""
         response = self.guest_client.get('/group/test/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        
