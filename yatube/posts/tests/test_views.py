@@ -310,14 +310,6 @@ class ImageViewsTest(TestCase):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
-    def test_content_contains_image(self):
-        """Проверка вывода в контексте картинки на страницы main, group_list
-         profile."""
-        for reverse_name in self.pages.keys():
-            response = self.authorized_client.get(reverse_name)
-            image_file = response.context['page_obj'][0].image
-            self.assertEqual(image_file, 'posts/small.gif')
-
 
 class CommentTest(TestCase):
     """Проверка комментариев"""
