@@ -39,7 +39,7 @@ class Post(models.Model):
         verbose_name_plural = 'Посты'
 
     def __str__(self):
-        # выводим текст поста
+        """ выводим текст поста """
         return self.text[:15]
 
 
@@ -57,6 +57,7 @@ class Group(models.Model):
 
 
 class Comment(models.Model):
+    """Оставить комментарий"""
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name='comments', verbose_name='Пост',
                              help_text='Под каким постом оставлен комментарий')
@@ -79,6 +80,7 @@ class Comment(models.Model):
 
 
 class Follow(models.Model):
+    """Подписка на авторов."""
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              related_name='follower')

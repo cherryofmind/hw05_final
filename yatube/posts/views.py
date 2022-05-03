@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Follow, Post, Group, User
+from .models import Follow, Post, Group, User, Comment
 from .forms import PostForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -57,16 +57,16 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-    form = CommentForm(request.POST or None, files=request.FILES or None)
-    post = Post.objects.select_related('author', 'group').get(id=post_id)
-    post_count = Post.objects.filter(author=post.author).count()
-    post_list = post.author.posts.all()
-    comments = post.comments.all()
+    post = get_object_or_404(Post, id=post_id)
+    author_posts = post.author.posts.count()
+    num_author_posts = Post.objects.filter(author=author_posts).count()
+    comment_form = CommentForm(request.POST or None)
+    comments = Comment.objects.filter(post=post)
     context = {
-        'post_list': post_list,
         'post': post,
-        'post_count': post_count,
-        'form': form,
+        'author_posts': author_posts,
+        'posts_count': num_author_posts,
+        'form': comment_form,
         'comments': comments,
     }
     return render(request, 'posts/post_detail.html', context)
@@ -87,11 +87,11 @@ def post_create(request):
 @login_required
 def post_edit(request, post_id):
     post = get_object_or_404(Post, id=post_id)
+    if post.author != request.user:
+        return redirect('posts:post_detail', post_id)
     is_edit = True
     form = PostForm(request.POST or None, files=request.FILES or None,
                     instance=post)
-    if post.author != request.user:
-        return redirect('posts:post_detail', post_id)
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id)
